@@ -1,6 +1,6 @@
 {
-  "name": "Julti Example Plugin",
-  "id": "julti-example-plugin",
+  "name": "Priority Plugin",
+  "id": "priority-plugin",
   "version": "${version}",
-  "initializer": "xyz.duncanruns.julti.exampleplugin.ExamplePlugin"
+  "initializer": "dev.tildejustin.priority.PriorityPlugin"
 }
