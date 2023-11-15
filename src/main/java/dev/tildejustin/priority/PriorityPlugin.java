@@ -2,7 +2,7 @@ package dev.tildejustin.priority;
 
 import com.google.common.io.Resources;
 import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.Kernel32Ext;
 import org.apache.logging.log4j.Level;
 import xyz.duncanruns.julti.Julti;
 import xyz.duncanruns.julti.JultiAppLaunch;
@@ -40,16 +40,16 @@ public class PriorityPlugin implements PluginInitializer {
         }
         PluginEvents.RunnableEventType.ALL_INSTANCES_FOUND.register(() ->
                 InstanceManager.getInstanceManager().getInstances().forEach(instance -> {
-                    WinNT.HANDLE handle = Kernel32.INSTANCE.OpenProcess(
-                            WinNT.PROCESS_SET_INFORMATION | WinNT.PROCESS_QUERY_LIMITED_INFORMATION,
-                            true, instance.getPid()
+                    Kernel32Ext.HANDLE handle = Kernel32.INSTANCE.OpenProcess(
+                            Kernel32Ext.PROCESS_ALL_ACCESS,
+                            false, instance.getPid()
                     );
                     Julti.log(Level.INFO, "setting instance: " + instance.getName() +
                             " to priority: " + this.priorityClass.toString() +
                             ", was: " + PriorityClass.valueToObject.get((Kernel32Ext.INSTANCE.GetPriorityClass(handle))).toString() +
                             ", pid: " + instance.getPid()
                     );
-                    Kernel32Ext.INSTANCE.SetPriorityClass(handle, this.priorityClass.DWORD);
+                    Julti.log(Level.INFO, Boolean.toString(Kernel32Ext.INSTANCE.SetPriorityClass(handle, this.priorityClass.DWORD)));
                     Kernel32.INSTANCE.CloseHandle(handle);
                 })
         );
