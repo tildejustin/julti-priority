@@ -2,9 +2,7 @@ package dev.tildejustin.priority;
 
 import com.sun.jna.platform.win32.WinDef;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public enum PriorityClass {
     REALTIME_PRIORITY_CLASS(0x00000100, "Realtime"),

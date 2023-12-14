@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.DuncanRuns:Julti:v0.22.0"
+    implementation "dev.tildejustin:julti:main-SNAPSHOT"
 }
 
 processResources {

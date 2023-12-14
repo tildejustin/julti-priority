@@ -1,18 +1,13 @@
 package dev.tildejustin.priority;
 
-import com.google.common.io.Resources;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.Kernel32Ext;
-import org.apache.logging.log4j.Level;
-import xyz.duncanruns.julti.Julti;
-import xyz.duncanruns.julti.JultiAppLaunch;
-import xyz.duncanruns.julti.JultiOptions;
-import xyz.duncanruns.julti.gui.JultiGUI;
-import xyz.duncanruns.julti.management.InstanceManager;
-import xyz.duncanruns.julti.plugin.PluginEvents;
-import xyz.duncanruns.julti.plugin.PluginInitializer;
-import xyz.duncanruns.julti.plugin.PluginManager;
-import xyz.duncanruns.julti.util.FileUtil;
+import com.google.common.io.*;
+import com.sun.jna.platform.win32.*;
+import org.apache.logging.log4j.*;
+import xyz.duncanruns.julti.*;
+import xyz.duncanruns.julti.gui.*;
+import xyz.duncanruns.julti.management.*;
+import xyz.duncanruns.julti.plugin.*;
+import xyz.duncanruns.julti.util.*;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -34,22 +29,20 @@ public class PriorityPlugin implements PluginInitializer {
     public void initialize() {
         try {
             if (this.config.toFile().createNewFile()) FileUtil.writeString(this.config, this.priorityClass.toString());
-            this.priorityClass = PriorityClass.nameToObject.get(FileUtil.readString(this.config));
+            this.priorityClass = PriorityClass.nameToObject.getOrDefault(FileUtil.readString(this.config), PriorityClass.ABOVE_NORMAL_PRIORITY_CLASS);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         PluginEvents.RunnableEventType.ALL_INSTANCES_FOUND.register(() ->
                 InstanceManager.getInstanceManager().getInstances().forEach(instance -> {
-                    Kernel32Ext.HANDLE handle = Kernel32.INSTANCE.OpenProcess(
-                            Kernel32Ext.PROCESS_ALL_ACCESS,
-                            false, instance.getPid()
+                    Kernel32.HANDLE handle = Kernel32.INSTANCE.OpenProcess(
+                            Kernel32.PROCESS_ALL_ACCESS, false, instance.getPid()
                     );
                     Julti.log(Level.INFO, "setting instance: " + instance.getName() +
                             " to priority: " + this.priorityClass.toString() +
-                            ", was: " + PriorityClass.valueToObject.get((Kernel32Ext.INSTANCE.GetPriorityClass(handle))).toString() +
-                            ", pid: " + instance.getPid()
+                            ", was: " + PriorityClass.valueToObject.get((Kernel32.INSTANCE.GetPriorityClass(handle))).toString()
                     );
-                    Julti.log(Level.INFO, Boolean.toString(Kernel32Ext.INSTANCE.SetPriorityClass(handle, this.priorityClass.DWORD)));
+                    Julti.log(Level.INFO, "succeeded: " + Kernel32.INSTANCE.SetPriorityClass(handle, this.priorityClass.DWORD));
                     Kernel32.INSTANCE.CloseHandle(handle);
                 })
         );
